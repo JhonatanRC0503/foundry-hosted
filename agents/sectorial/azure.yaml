@@ -16,6 +16,19 @@ services:
         sku:
           name: GlobalStandard
           capacity: 10
+  agent-tools:
+    host: azure.ai.toolbox
+    tools:
+      - type: web_search
+        name: web_search
+      - type: azure_ai_search
+        name: search_conocimiento
+        azure_ai_search:
+          indexes:
+            - project_connection_id: sectorial-search-conn
+              index_name: sectorial-sharepoint-index
+              query_type: simple
+              top_k: 5
   sectorial:
     host: azure.ai.agent
     metadata:
@@ -33,15 +46,19 @@ services:
       dependencyResolution: remote_build
     uses:
       - ai-project
+      - agent-tools
     kind: hosted
-    name: agent-framework-agent-basic-responses
-    description: A basic Agent Framework agent hosted by Foundry.
+    name: sectorial
+    description: Agente sectorial con búsqueda web y base de conocimiento
+      (SharePoint indexado en Azure AI Search).
     protocols:
       - protocol: responses
         version: 2.0.0
     environmentVariables:
       - name: AZURE_AI_MODEL_DEPLOYMENT_NAME
         value: ${AZURE_AI_MODEL_DEPLOYMENT_NAME}
+      - name: TOOLBOX_NAME
+        value: agent-tools
     container:
       resources:
         cpu: '0.5'

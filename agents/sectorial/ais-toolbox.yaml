@@ -1,0 +1,12 @@
+description: sectorial agent tools - web search + azure ai search (sharepoint knowledge)
+tools:
+  - type: web_search
+    name: web_search
+  - type: azure_ai_search
+    name: search_conocimiento
+    azure_ai_search:
+      indexes:
+        - project_connection_id: sectorial-search-conn
+          index_name: sectorial-sharepoint-index
+          query_type: simple
+          top_k: 5
