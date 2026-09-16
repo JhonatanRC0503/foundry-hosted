@@ -1,6 +1,7 @@
 agent-framework-foundry
 # FoundryToolbox (toolbox MCP client) requires this minimum version.
 agent-framework-foundry-hosting>=1.0.0b260813
+httpx
 
 # debugpy enables local debugging of this agent with the Foundry Toolkit VS Code extension.
 debugpy

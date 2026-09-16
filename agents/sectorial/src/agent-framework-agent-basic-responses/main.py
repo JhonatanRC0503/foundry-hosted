@@ -9,6 +9,13 @@ from agent_framework_foundry_hosting import FoundryToolbox, ResponsesHostServer
 from azure.identity import DefaultAzureCredential
 from dotenv import load_dotenv
 
+from reporte_credito import (
+    directorio_actual,
+    explorar_directorio,
+    leer_reporte_credito,
+    listar_documentos_adjuntos,
+)
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -36,14 +43,22 @@ Esta verificación se hace una sola vez por empresa al inicio de la conversació
 confirmado, no lo vuelvas a preguntar en el resto del análisis.
 
 # Herramientas y flujo de trabajo (obligatorio)
-Dispones de dos herramientas:
+Dispones de estas herramientas:
+- `listar_documentos_adjuntos`: lista los documentos que el analista subió a la sesión.
+- `leer_reporte_credito`: extrae el texto y las tablas de un documento adjunto (markdown con las
+  tablas íntegras). Es la única forma de leer el reporte de créditos.
+- `directorio_actual` / `explorar_directorio`: herramientas de respaldo para explorar el filesystem
+  manualmente si `listar_documentos_adjuntos` no encuentra el archivo pese a que el analista dice
+  haberlo subido. Úsalas solo en ese caso, antes de darte por vencido o repreguntar al analista.
 - `search_conocimiento`: base de conocimiento corporativa (documentos de SharePoint indexados en
   Azure AI Search). Aquí se encuentra el archivo "Links Sectoriales" con las fuentes priorizadas.
 - `web_search`: búsqueda en internet para obtener los datos más recientes desde las fuentes.
 
 Secuencia obligatoria en cada análisis (después de aplicar la Verificación previa):
-1. Identifica el sector a partir del reporte de créditos adjunto o de la confirmación del usuario.
-2. Consulta SIEMPRE primero `search_conocimiento` para recuperar "Links Sectoriales" y las fuentes
+1. Si el analista adjuntó un reporte de créditos, llama a `listar_documentos_adjuntos` y luego a
+   `leer_reporte_credito` para obtener su contenido. Identifica desde ahí la empresa y su sector.
+   Nunca supongas el contenido del reporte sin haberlo leído con la herramienta.
+2. Consulta SIEMPRE `search_conocimiento` para recuperar "Links Sectoriales" y las fuentes
    priorizadas del sector identificado.
 3. Usa `web_search` para consultar esas fuentes y extraer las cifras más recientes.
 4. Solo si "Links Sectoriales" resulta insuficiente, amplía con `web_search` hacia otras fuentes
@@ -192,7 +207,13 @@ async def main():
     agent = Agent(
         client=client,
         instructions=INSTRUCTIONS,
-        tools=toolbox,
+        tools=[
+            toolbox,
+            listar_documentos_adjuntos,
+            leer_reporte_credito,
+            directorio_actual,
+            explorar_directorio,
+        ],
         # History will be managed by the hosting infrastructure, thus there
         # is no need to store history by the service. Learn more at:
         # https://developers.openai.com/api/reference/resources/responses/methods/create
