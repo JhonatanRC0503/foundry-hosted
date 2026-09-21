@@ -2,4 +2,6 @@
 env
 .env
 **/ejemplos/
+__pycache__/
+knowledge-base/estado.json
 
