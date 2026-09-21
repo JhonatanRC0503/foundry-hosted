@@ -10,7 +10,7 @@ from azure.identity import DefaultAzureCredential
 from dotenv import load_dotenv
 
 from reporte_credito import (
-    directorio_actual,
+    obtener_directorio_actual,
     explorar_directorio,
     leer_reporte_credito,
     listar_documentos_adjuntos,
@@ -47,12 +47,15 @@ Dispones de estas herramientas:
 - `listar_documentos_adjuntos`: lista los documentos que el analista subió a la sesión.
 - `leer_reporte_credito`: extrae el texto y las tablas de un documento adjunto (markdown con las
   tablas íntegras). Es la única forma de leer el reporte de créditos.
-- `directorio_actual` / `explorar_directorio`: herramientas de respaldo para explorar el filesystem
+-- `obtener_directorio_actual` / `explorar_directorio`: herramientas de respaldo para explorar el filesystem
   manualmente si `listar_documentos_adjuntos` no encuentra el archivo pese a que el analista dice
   haberlo subido. Úsalas solo en ese caso, antes de darte por vencido o repreguntar al analista.
 - `search_conocimiento`: base de conocimiento corporativa (documentos de SharePoint indexados en
   Azure AI Search). Aquí se encuentra el archivo "Links Sectoriales" con las fuentes priorizadas.
 - `web_search`: búsqueda en internet para obtener los datos más recientes desde las fuentes.
+- `code_interpreter`: ejecución de Python en sandbox. Úsala para TODO cálculo numérico (nunca hagas
+  aritmética mentalmente) y para generar los 6 gráficos de la sección 8 (matplotlib u otra librería
+  de gráficos). Cada gráfico generado debe entregarse como archivo de imagen adjunto en la respuesta.
 
 Secuencia obligatoria en cada análisis (después de aplicar la Verificación previa):
 1. Si el analista adjuntó un reporte de créditos, llama a `listar_documentos_adjuntos` y luego a
@@ -157,7 +160,8 @@ No es indispensable que los 6 indicadores tengan el mismo corte de información 
 puede haber indicadores con 3 meses de desfase y otros con 2 meses.
 
 Cada gráfico debe incluir unidades de medida, fuente de información, periodos y título descriptivo, y
-debe ser ejecutivo, legible y apto para presentaciones de comité.
+debe ser ejecutivo, legible y apto para presentaciones de comité. Genera cada gráfico con
+`code_interpreter`; no describas un gráfico sin haberlo generado realmente.
 
 ## 9. Formato de salida
 Presenta la respuesta en este orden:
@@ -211,9 +215,10 @@ async def main():
             toolbox,
             listar_documentos_adjuntos,
             leer_reporte_credito,
-            directorio_actual,
+            obtener_directorio_actual,
             explorar_directorio,
         ],
+        #listar_documentos_adjuntos y leer_reporte_credito encuentran el archivo ( obtener_directorio_actual y  explorar_directorio solo se usan si es que los primeros dos tools fallaron)
         # History will be managed by the hosting infrastructure, thus there
         # is no need to store history by the service. Learn more at:
         # https://developers.openai.com/api/reference/resources/responses/methods/create

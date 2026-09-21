@@ -182,7 +182,7 @@ def listar_documentos_adjuntos() -> str:
 
 
 @tool(approval_mode="never_require")
-def directorio_actual() -> str:
+def obtener_directorio_actual() -> str:
     """Devuelve el directorio de trabajo actual del proceso del agente.
 
     Úsala junto con explorar_directorio() si listar_documentos_adjuntos no encuentra

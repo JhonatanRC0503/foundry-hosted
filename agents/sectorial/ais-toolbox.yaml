@@ -8,5 +8,5 @@ tools:
       indexes:
         - project_connection_id: sectorial-search-conn
           index_name: sectorial-sharepoint-index
-          query_type: simple
+          query_type: vector_simple_hybrid
           top_k: 5
