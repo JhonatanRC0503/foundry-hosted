@@ -16,6 +16,12 @@ services:
         sku:
           name: GlobalStandard
           capacity: 10
+  financiero-tools:
+    host: azure.ai.toolbox
+    tools:
+      - type: code_interpreter
+        name: code_interpreter
+        container: { type: auto }
   financiero:
     host: azure.ai.agent
     metadata:
@@ -33,15 +39,21 @@ services:
       dependencyResolution: remote_build
     uses:
       - ai-project
+      - financiero-tools
     kind: hosted
-    name: agent-framework-agent-basic-responses
-    description: A basic Agent Framework agent hosted by Foundry.
+    name: financiero
+    description: Agente financiero con análisis de estados financieros, lectura de
+      adjuntos y ejecución de código (code interpreter).
     protocols:
       - protocol: responses
         version: 2.0.0
     environmentVariables:
       - name: AZURE_AI_MODEL_DEPLOYMENT_NAME
         value: ${AZURE_AI_MODEL_DEPLOYMENT_NAME}
+      - name: TOOLBOX_NAME
+        value: financiero-tools
+      - name: DOCUMENT_INTELLIGENCE_ENDPOINT
+        value: ${DOCUMENT_INTELLIGENCE_ENDPOINT}
     container:
       resources:
         cpu: '0.5'
