@@ -26,7 +26,7 @@ services:
         azure_ai_search:
           indexes:
             - project_connection_id: sectorial-search-conn
-              index_name: sectorial-sharepoint-index
+              index_name: agente-sharepoint-index
               query_type: vector_simple_hybrid
               top_k: 5
       - type: code_interpreter
