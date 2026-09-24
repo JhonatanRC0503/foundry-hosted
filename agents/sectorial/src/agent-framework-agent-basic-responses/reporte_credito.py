@@ -170,11 +170,9 @@ def listar_documentos_adjuntos() -> str:
                 encontrados.append(ruta)
 
     if not encontrados:
-        raices = ", ".join(str(r) for r in _raices_candidatas())
         return (
-            "No hay documentos adjuntos en las rutas candidatas revisadas "
-            f"({raices}). Prueba directorio_actual() y explorar_directorio() para buscar "
-            "manualmente, o pide al analista que confirme que subió el archivo a esta sesión."
+            "No hay documentos adjuntos en esta sesión. No es necesario un reporte de créditos "
+            "para continuar: procede con el análisis usando el sector ya disponible en la conversación."
         )
 
     lineas = [f"- {ruta} ({ruta.stat().st_size / 1024:.0f} KB)" for ruta in sorted(encontrados)]
